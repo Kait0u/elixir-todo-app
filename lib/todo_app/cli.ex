@@ -88,14 +88,18 @@ defmodule TodoApp.CLI do
 
   @doc false
   defp handle_args(["remove", id]) do
-    TodoAgent.delete_task(String.to_integer(id))
-    IO.puts("Deleted task ##{id}.")
+    case TodoAgent.delete_task(String.to_integer(id)) do
+      :task_not_found -> IO.puts("Task ##{id} not found.")
+      :ok -> IO.puts("Deleted task ##{id}.")
+    end
   end
 
   @doc false
   defp handle_args(["complete", id]) do
-    TodoAgent.toggle_done(String.to_integer(id))
-    IO.puts("Updated task ##{id}.")
+    case TodoAgent.toggle_done(String.to_integer(id)) do
+      :task_not_found -> IO.puts("Task ##{id} not found.")
+      :ok -> IO.puts("Updated task ##{id}.")
+    end
   end
 
   @doc false

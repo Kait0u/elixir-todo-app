@@ -78,11 +78,17 @@ defmodule TodoAgent do
 
     * `:ok`
   """
-  @spec delete_task(pos_integer()) :: :ok
+  @spec delete_task(pos_integer()) :: :ok | :task_not_found
   def delete_task(task_id) do
     get_tasklist()
-    |> Enum.reject(& &1.id == task_id)
-    |> set_tasklist()
+    |> Enum.find(& &1.id == task_id)
+    |> case do
+      nil -> :task_not_found
+      _ ->
+        get_tasklist()
+        |> Enum.reject(& &1.id == task_id)
+        |> set_tasklist()
+      end
   end
 
   @doc """
@@ -96,11 +102,17 @@ defmodule TodoAgent do
 
     * `:ok`
   """
-  @spec toggle_done(pos_integer()) :: :ok
+  @spec toggle_done(pos_integer()) :: :ok | :task_not_found
   def toggle_done(task_id) do
     get_tasklist()
-    |> Enum.map(&if &1.id == task_id, do: TaskInfo.toggle_done(&1), else: &1)
-    |> set_tasklist()
+    |> Enum.find(& &1.id == task_id)
+    |> case do
+      nil -> :task_not_found
+      _ ->
+        get_tasklist()
+        |> Enum.map(&if &1.id == task_id, do: TaskInfo.toggle_done(&1), else: &1)
+        |> set_tasklist()
+      end
   end
 
   @doc """
