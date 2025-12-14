@@ -17,7 +17,6 @@ mix deps.get
 mix escript.build
 ```
 
-
 This will create an executable named `todo` in the `./build` subdirectory, to be called something like this:
 
 ```bash
