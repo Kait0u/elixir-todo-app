@@ -44,6 +44,6 @@ defmodule IdSequenceAgentTest do
     outcome = IdSequenceAgent.force_set(10)
 
     assert outcome == :ok
-    IdSequenceAgent.peek_next() == 10
+    assert IdSequenceAgent.peek_next() == 10
   end
 end
