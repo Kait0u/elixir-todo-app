@@ -3,7 +3,7 @@ defmodule IdSequenceAgent do
 
   @initial_next_value 1
 
-  def start_link() do
+  def start_link(_opts \\ []) do
     Agent.start_link(fn -> @initial_next_value end, name: __MODULE__)
   end
 
