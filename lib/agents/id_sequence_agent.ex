@@ -17,6 +17,16 @@ defmodule IdSequenceAgent do
     Agent.get_and_update(__MODULE__, & {&1, &1 + 1})
   end
 
+  @spec force_set(pos_integer()) :: :ok
+  def force_set(new_next) do
+    Agent.update(__MODULE__, fn _ -> new_next end)
+  end
+
+  @spec reset() :: :ok
+  def reset() do
+    Agent.update(__MODULE__, fn _ -> @initial_next_value end)
+  end
+
   @spec running?() :: boolean
   def running?() do
     case Process.whereis(__MODULE__) do

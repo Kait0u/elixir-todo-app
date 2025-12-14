@@ -24,4 +24,26 @@ defmodule IdSequenceAgentTest do
     assert generated == Range.to_list(1..10)
     assert IdSequenceAgent.peek_next() == 11
   end
+
+  test "Should offer 1 again after a reset" do
+    IdSequenceAgent.start_link()
+
+    generated =
+      for _ <- 1 .. 10, do: IdSequenceAgent.generate()
+
+    outcome = IdSequenceAgent.reset()
+
+    assert generated == Range.to_list(1..10)
+    assert outcome == :ok
+    assert IdSequenceAgent.peek_next() == 1
+  end
+
+  test "Should offer the value that has been force-set" do
+    IdSequenceAgent.start_link()
+
+    outcome = IdSequenceAgent.force_set(10)
+
+    assert outcome == :ok
+    IdSequenceAgent.peek_next() == 10
+  end
 end
