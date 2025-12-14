@@ -2,6 +2,7 @@ defmodule TaskInfo do
   @done_marker "[X]"
   @pending_marker "[ ]"
 
+  @derive Jason.Encoder
   @enforce_keys [:id, :title]
   defstruct [:id, :title, done?: false]
 

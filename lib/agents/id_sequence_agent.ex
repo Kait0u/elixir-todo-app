@@ -3,8 +3,8 @@ defmodule IdSequenceAgent do
 
   @initial_next_value 1
 
-  def start_link(_opts \\ []) do
-    Agent.start_link(fn -> @initial_next_value end, name: __MODULE__)
+  def start_link(initial_next_value \\ @initial_next_value) do
+    Agent.start_link(fn -> initial_next_value end, name: __MODULE__)
   end
 
   @spec peek_next() :: pos_integer()

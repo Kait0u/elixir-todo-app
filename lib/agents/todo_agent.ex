@@ -1,8 +1,9 @@
 defmodule TodoAgent do
   use Agent
 
-  def start_link(_opts \\ []) do
-    Agent.start_link(fn -> [] end, name: __MODULE__)
+  @spec start_link(list(TaskInto.t())) :: {:error, any()} | {:ok, pid()}
+  def start_link(initial_state \\ []) do
+    Agent.start_link(fn -> initial_state end, name: __MODULE__)
   end
 
   @spec get_tasks() :: list(TaskInfo.t())
@@ -36,13 +37,39 @@ defmodule TodoAgent do
     |> set_tasklist()
   end
 
-  def print() do
+  @spec max_id() :: pos_integer()
+  def max_id() do
     get_tasklist()
-    |> Enum.reverse()
-    |> Enum.map(&TaskInfo.to_string/1)
-    |> Enum.each(fn task_str ->
-      IO.puts(task_str)
-    end)
+    |> Enum.map(& &1.id)
+    |> then(& [0 | &1]) # 0 for compatibility with empty stuff (will be increased to 1 via +1 when used)
+    |> Enum.max()
+  end
+
+  @spec print() :: :ok
+  def print() do
+    summary = summarize()
+
+    # Start printing
+
+    PrintUtils.print_separator()
+    IO.puts("My TODOs")
+    PrintUtils.print_separator()
+
+    tasks = get_tasklist()
+    if length(tasks) > 0 do
+      tasks
+      |> Enum.reverse()
+      |> Enum.map(&TaskInfo.to_string/1)
+      |> Enum.each(fn task_str ->
+        IO.puts(task_str)
+      end)
+    else
+      IO.puts("Nothing on your list yet...")
+    end
+
+    PrintUtils.print_separator()
+    IO.puts("TOTAL = #{summary.total}, DONE = #{summary.done} (#{summary.percent_done}%)")
+    PrintUtils.print_separator()
   end
 
   # =======================================================
@@ -54,4 +81,21 @@ defmodule TodoAgent do
 
   @spec set_tasklist(list(TaskInfo.t())) :: :ok
   defp set_tasklist(new_tasklist), do: Agent.update(__MODULE__, fn _ -> new_tasklist end)
+
+  @spec summarize() :: %{total: non_neg_integer(), done: non_neg_integer(), percent_done: float()}
+  defp summarize() do
+    count =
+      get_tasklist()
+      |> then(&length/1)
+
+    done_count =
+      get_tasklist()
+      |> Enum.count(&(&1.done?))
+
+    %{
+      total: count,
+      done: done_count,
+      percent_done: (if count != 0, do: 100.0 * done_count / count, else: 100.0)
+    }
+  end
 end
