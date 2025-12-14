@@ -80,6 +80,13 @@ defmodule TodoAgent do
   """
   @spec delete_task(pos_integer()) :: :ok | :task_not_found
   def delete_task(task_id) do
+    # Check if the task to be deleted is the last one and if so - force-set the ID Generator
+    List.last(get_tasklist())
+    |> case do
+      %TaskInfo{id: ^task_id} -> IdSequenceAgent.force_set(task_id)
+      _ -> nil
+    end
+
     get_tasklist()
     |> Enum.find(& &1.id == task_id)
     |> case do
