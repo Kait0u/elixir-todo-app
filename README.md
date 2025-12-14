@@ -37,7 +37,7 @@ COMMANDS:
   help                  Show this help message
 
 OPTIONS:
-  -f, --file FILE       Path to the todo storage file
+  -f, --file FILE       Path to the todo storage file (default: store/todos.json)
   -h, --help            Show this help message
 
 EXAMPLES:
