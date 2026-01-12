@@ -153,7 +153,7 @@ defmodule TodoAgent do
     tasks = get_tasklist()
     if length(tasks) > 0 do
       tasks
-      |> Enum.reverse()
+      |> Enum.sort_by(& &1.id)
       |> Enum.map(&TaskInfo.to_string/1)
       |> Enum.each(&IO.puts/1)
     else
